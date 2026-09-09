@@ -11,7 +11,7 @@ const initialProducts = [
   { id: 5, category: 'Kits Festa', name: 'Kit Festa Especial', description: 'Bolo + docinhos para deixar sua comemoração ainda mais gostosa.', price: 149, unit: 'Kit', image: 'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=900&q=85', available: true, featured: true },
   { id: 6, category: 'Bolos', name: 'Bolo de Ninho', description: 'Massa branca, creme de leite ninho e acabamento delicado.', price: 65, unit: 'A partir de', image: 'https://images.unsplash.com/photo-1602351447937-745cb720612f?auto=format&fit=crop&w=900&q=85', available: true, featured: false },
 ];
-const WA = '5546954693001';
+const WA = '5546933001791';
 
 function App() {
   const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('maristela-products') || 'null') || initialProducts);
