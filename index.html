@@ -6,6 +6,37 @@
     <meta name="description" content="Doces e Delícias da Maristela — bolos, doces e kits feitos com carinho em Vitorino-PR." />
     <meta name="theme-color" content="#b76e79" />
     <title>Doces e Delícias da Maristela</title>
+    <style>
+      .cart-modal{width:min(460px,100%);height:100%;background:var(--cream);padding:23px;overflow:auto;box-shadow:-20px 0 60px rgba(0,0,0,.12);color:var(--dark)}
+      .cart-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px}
+      .cart-head h2{font:600 28px 'Playfair Display';margin:0}
+      .cart-list{display:grid}
+      .cart-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+      .cart-item img{width:62px;height:62px;object-fit:cover;border-radius:10px;flex:none}
+      .cart-item-info{flex:1;min-width:0}
+      .cart-item-info>b,.cart-item-info>small{display:block}
+      .cart-item-info>b{font-size:11px}
+      .cart-item-info>small{font-size:9px;color:var(--muted);margin-top:3px}
+      .cart-line-total{font-size:11px;white-space:nowrap;margin-left:auto}
+      .cart-item .qty{display:flex;align-items:center;gap:10px;margin-top:6px}
+      .cart-item .qty button{width:25px;height:25px;border-radius:7px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;padding:0}
+      .cart-item .qty button:disabled{opacity:.45;cursor:not-allowed}
+      .cart-item .qty span{font-size:11px;min-width:14px;text-align:center}
+      .cart-item .remove{width:25px;height:25px;padding:0;background:none;color:#a97b7b;display:grid;place-items:center;flex:none}
+      .cart-summary{display:flex;justify-content:space-between;align-items:center;margin-top:23px;font-size:12px}
+      .cart-summary strong{font-size:20px}
+      .cart-note{font-size:10px;color:var(--muted);line-height:1.6;margin:12px 0}
+      .checkout{width:100%;margin-top:10px}
+      .empty-cart{display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding-top:10px}
+      .empty-cart svg{color:var(--rose)}
+      @media(max-width:600px){
+        .cart-modal{width:100%;padding:17px 15px}
+        .cart-head h2{font-size:28px}
+        .cart-item{gap:9px}
+        .cart-item img{width:62px;height:62px}
+        .cart-line-total{font-size:10px}
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
