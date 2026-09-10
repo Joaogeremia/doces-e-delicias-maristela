@@ -42,6 +42,8 @@
     setTimeout(() => { w.focus(); w.print(); }, 1000);
   };
 
+  window.generateMaristelaPdf = generatePremiumPdf;
+
   const updateInstagram = () => document.querySelectorAll('a[href*="instagram.com"]').forEach(link => { link.href = instagramUrl; });
   const updateCategory = () => document.querySelectorAll('.admin-modal label').forEach(label => {
     if (!label.textContent.trim().startsWith('Categoria')) return;
@@ -62,10 +64,12 @@
       button.type = 'button';
       button.className = 'pdf-menu-button';
       button.textContent = 'Gerar cardápio PDF';
-      button.addEventListener('click', generatePremiumPdf);
+      button.onclick = () => window.generateMaristelaPdf();
       actions.insertBefore(button, actions.firstChild);
     }
   };
+
   new MutationObserver(bind).observe(document.body,{childList:true,subtree:true});
   bind();
+  setInterval(bind, 500);
 })();
