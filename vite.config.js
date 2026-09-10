@@ -5,9 +5,9 @@ export default defineConfig({
   plugins: [
     react(),
     {
-      name: 'inject-admin-fix-css',
+      name: 'inject-site-polish-css',
       transformIndexHtml(html) {
-        return html.replace('</head>', '    <link rel="stylesheet" href="/admin-fix.css">\n  </head>');
+        return html.replace('</head>', '    <link rel="stylesheet" href="/admin-fix.css">\n    <link rel="stylesheet" href="/polish.css">\n  </head>');
       },
     },
   ],
