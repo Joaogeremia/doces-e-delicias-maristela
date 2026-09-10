@@ -58,5 +58,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      const instagramUrl = 'https://www.instagram.com/maristelaackerdoces/';
+      const updateInstagramLink = () => {
+        document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
+          link.href = instagramUrl;
+        });
+      };
+      new MutationObserver(updateInstagramLink).observe(document.body, { childList: true, subtree: true });
+      updateInstagramLink();
+    </script>
   </body>
 </html>
