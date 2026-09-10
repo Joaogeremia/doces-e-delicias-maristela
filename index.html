@@ -41,12 +41,26 @@
       };
       const escPdf = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
       const generateMenuPdf = () => {
-        const products = JSON.parse(localStorage.getItem('maristela-products') || '[]').filter(p => p.available !== false);
-        if (!products.length) return;
+        let products = [];
+        try { products = JSON.parse(localStorage.getItem('maristela-products') || '[]'); } catch (error) { products = []; }
+        if (!products.length) {
+          products = [
+            { category:'Bolos', name:'Bolo de Chocolate', description:'Massa fofinha, brigadeiro cremoso e cobertura de chocolate.', price:55, unit:'A partir de', minQuantity:1, image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85', available:true },
+            { category:'Bolos', name:'Bolo de Morango', description:'Creme de ninho, morangos frescos e massa branca.', price:65, unit:'A partir de', minQuantity:1, image:'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=85', available:true },
+            { category:'Doces', name:'Brigadeiros Gourmet', description:'Brigadeiros artesanais, feitos na hora e super cremosos.', price:75, unit:'100 unidades', minQuantity:1, image:'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=900&q=85', available:true },
+            { category:'Doces', name:'Beijinho de Coco', description:'O clássico beijinho com coco e muito carinho.', price:75, unit:'100 unidades', minQuantity:1, image:'https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=85', available:true },
+            { category:'Kits Festa', name:'Kit Festa Especial', description:'Bolo + docinhos para deixar sua comemoração ainda mais gostosa.', price:149, unit:'Kit', minQuantity:1, image:'https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&w=900&q=85', available:true },
+            { category:'Bolos', name:'Bolo de Ninho', description:'Massa branca, creme de leite ninho e acabamento delicado.', price:65, unit:'A partir de', minQuantity:1, image:'https://images.unsplash.com/photo-1602351447937-745cb720612f?auto=format&fit=crop&w=900&q=85', available:true }
+          ];
+        }
+        products = products.filter(p => p.available !== false);
+        if (!products.length) { alert('Não há produtos disponíveis para gerar o cardápio.'); return; }
+        localStorage.setItem('maristela-products', JSON.stringify(products));
         const groups = {};
         products.forEach(p => { (groups[p.category] ||= []).push(p); });
         const cards = Object.entries(groups).map(([category, items]) => `<section class="pdf-category"><h2>${escPdf(category)}</h2><div class="pdf-grid">${items.map(p => `<article class="pdf-card"><img src="${escPdf(p.image)}" alt="${escPdf(p.name)}"><div><h3>${escPdf(p.name)}</h3><p>${escPdf(p.description)}</p><strong>R$ ${Number(p.price || 0).toFixed(2).replace('.', ',')}</strong><small>${escPdf(p.unit || '')}${Number(p.minQuantity) > 1 ? ` • Mínimo: ${Number(p.minQuantity)}` : ''}</small></div></article>`).join('')}</div></section>`).join('');
-        const w = window.open('', '_blank', 'width=900,height=1000'); if (!w) return;
+        const w = window.open('', '_blank', 'width=900,height=1000');
+        if (!w) { alert('O navegador bloqueou a janela do PDF. Permita pop-ups para este site e tente novamente.'); return; }
         w.document.write(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Cardápio - Doces e Delícias da Maristela</title><style>@page{size:A4;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#faf6f1;color:#3b2d2d;font-family:Arial,sans-serif}.cover{text-align:center;padding:10px 0 22px;border-bottom:1px solid #e8dcd7;margin-bottom:20px}.mark{width:52px;height:52px;border-radius:50%;background:#a45c64;color:#fff;display:inline-grid;place-items:center;font:700 27px Georgia}.eyebrow{text-transform:uppercase;letter-spacing:3px;font-size:9px;color:#a45c64;font-weight:700;margin:10px 0}.cover h1{font:600 32px Georgia;margin:5px 0}.cover p{color:#756967;margin:5px}.pdf-category{break-inside:avoid;margin-bottom:20px}.pdf-category h2{font:600 20px Georgia;color:#884b53;border-bottom:1px solid #e8dcd7;padding-bottom:7px;margin:0 0 10px}.pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pdf-card{display:flex;gap:10px;background:#fffdfa;border:1px solid #e8dcd7;border-radius:12px;padding:9px;break-inside:avoid}.pdf-card img{width:72px;height:72px;object-fit:cover;border-radius:9px;background:#eee}.pdf-card h3{font-size:13px;margin:1px 0 4px}.pdf-card p{font-size:9px;line-height:1.35;color:#756967;margin:0 0 6px}.pdf-card strong{font-size:12px}.pdf-card small{display:block;font-size:8px;color:#756967;margin-top:2px}.footer{text-align:center;border-top:1px solid #e8dcd7;padding-top:14px;margin-top:20px;font-size:9px;color:#756967}.footer b{color:#a45c64}@media(max-width:650px){.pdf-grid{grid-template-columns:1fr}}</style></head><body><div class="cover"><span class="mark">M</span><div class="eyebrow">VITORINO - PR</div><h1>Doces e Delícias da Maristela</h1><p>Bolos, doces e sobremesas feitos com carinho.</p></div>${cards}<div class="footer"><b>Encomendas:</b> +55 (46) 93300-1791 &nbsp; • &nbsp; Instagram: @maristelaackerdoces<br>Consulte disponibilidade e valores atualizados pelo WhatsApp.</div></body></html>`);
         w.document.close(); setTimeout(() => { w.focus(); w.print(); }, 900);
       };
