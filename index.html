@@ -60,13 +60,48 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
       const instagramUrl = 'https://www.instagram.com/maristelaackerdoces/';
+      const adminCategories = ['Bolos', 'Doces', 'Kits Festa', 'Sobremesas', 'Kits e Cestas'];
+
       const updateInstagramLink = () => {
         document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
           link.href = instagramUrl;
         });
       };
-      new MutationObserver(updateInstagramLink).observe(document.body, { childList: true, subtree: true });
+
+      const updateAdminCategory = () => {
+        document.querySelectorAll('.admin-modal label').forEach(label => {
+          if (!label.textContent.trim().startsWith('Categoria')) return;
+          const input = label.querySelector('input');
+          if (!input || label.querySelector('.admin-category-select')) return;
+
+          const select = document.createElement('select');
+          select.className = 'admin-category-select';
+          select.required = true;
+          adminCategories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            select.appendChild(option);
+          });
+          select.value = input.value || 'Bolos';
+          input.style.display = 'none';
+          label.insertBefore(select, input);
+
+          select.addEventListener('change', () => {
+            input.value = select.value;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+        });
+      };
+
+      const observer = new MutationObserver(() => {
+        updateInstagramLink();
+        updateAdminCategory();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
       updateInstagramLink();
+      updateAdminCategory();
     </script>
   </body>
 </html>
