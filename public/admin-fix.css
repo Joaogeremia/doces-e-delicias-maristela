@@ -1,15 +1,259 @@
-/* Ajuste da área administrativa: usa os nomes reais do componente Admin. */
-.admin-modal{width:min(760px,calc(100% - 32px)) !important;max-height:92vh !important;height:auto !important;overflow-y:auto !important;padding:22px !important;box-sizing:border-box !important;border-radius:20px !important;}
-.admin-head{position:sticky !important;top:-22px !important;z-index:10 !important;background:var(--cream) !important;padding:22px 0 12px !important;margin:0 !important;}
-.admin-head h2{font-size:28px !important;margin:0 !important;}
-.admin-form{padding:16px !important;margin:0 !important;}
-.form-grid{gap:10px !important;}
-.admin-form label{gap:4px !important;margin:0 !important;}
-.admin-form input:not([type="checkbox"]),.admin-form textarea,.admin-form select{min-height:42px !important;height:auto !important;padding:9px 10px !important;box-sizing:border-box !important;margin:0 !important;}
-.admin-form textarea{min-height:70px !important;}
-.field-help{font-size:11px !important;line-height:1.35 !important;margin-top:2px !important;}
-.check{display:flex !important;align-items:center !important;gap:8px !important;min-height:30px !important;}
-.check input{width:16px !important;height:16px !important;margin:0 !important;}
-.admin-form-actions{display:flex !important;justify-content:flex-end !important;gap:10px !important;margin-top:12px !important;}
-.admin-list{margin-top:16px !important;}
-@media(max-width:700px){.admin-overlay{padding:10px !important;align-items:center !important;}.admin-modal{width:calc(100% - 12px) !important;max-height:90vh !important;padding:14px !important;border-radius:18px !important;}.admin-head{top:-14px !important;padding:14px 0 10px !important;}.admin-head h2{font-size:22px !important;}.admin-form{padding:12px 0 !important;}.form-grid{grid-template-columns:1fr !important;gap:9px !important;}.admin-form-actions{position:sticky !important;bottom:-14px !important;z-index:8 !important;background:var(--cream) !important;padding:10px 0 2px !important;margin-top:8px !important;border-top:1px solid var(--line) !important;}.admin-form-actions button{flex:1 !important;}}
+/* Painel administrativo — correção definitiva de tamanho e overflow. */
+html, body, #root { max-width: 100%; overflow-x: hidden !important; }
+
+.admin-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.admin-modal {
+  position: relative !important;
+  display: block !important;
+  width: min(620px, calc(100vw - 32px)) !important;
+  max-width: calc(100vw - 32px) !important;
+  height: auto !important;
+  max-height: calc(100vh - 32px) !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: var(--cream) !important;
+  border-radius: 18px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.20) !important;
+}
+
+.admin-modal *,
+.admin-modal *::before,
+.admin-modal *::after {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+
+.admin-head {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 18px 20px 14px !important;
+  background: var(--cream) !important;
+  border-bottom: 1px solid var(--line) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.admin-head .eyebrow { margin: 0 0 5px !important; font-size: 9px !important; }
+.admin-head h2 { margin: 0 !important; font: 600 27px/1.1 'Playfair Display' !important; }
+.admin-head .modal-close { flex: 0 0 38px !important; width: 38px !important; height: 38px !important; }
+
+.admin-form {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 16px 20px !important;
+  background: var(--paper) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+.form-grid {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px 12px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.form-grid label {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.form-grid label:nth-child(3),
+.form-grid label:nth-child(7) {
+  grid-column: 1 / -1 !important;
+}
+
+.admin-form input:not([type="checkbox"]),
+.admin-form textarea,
+.admin-form select {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 38px !important;
+  height: 38px !important;
+  margin: 4px 0 0 !important;
+  padding: 8px 10px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  outline: none !important;
+}
+
+.admin-form textarea {
+  height: 58px !important;
+  min-height: 58px !important;
+  resize: vertical !important;
+}
+
+.field-help {
+  display: block !important;
+  width: 100% !important;
+  margin: 3px 0 0 !important;
+  font-size: 9px !important;
+  line-height: 1.25 !important;
+  color: var(--muted) !important;
+}
+
+.form-grid .check {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  min-height: 28px !important;
+  width: auto !important;
+  margin: 0 !important;
+  padding: 3px 0 !important;
+}
+
+.form-grid .check input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.admin-form-actions {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  margin: 12px 0 0 !important;
+  padding: 0 !important;
+}
+
+.admin-form-actions button {
+  min-height: 40px !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  font-size: 11px !important;
+  white-space: nowrap !important;
+}
+
+.admin-list {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 14px 20px 20px !important;
+  display: grid !important;
+  gap: 8px !important;
+  overflow: hidden !important;
+}
+
+.admin-row {
+  width: 100% !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px !important;
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+}
+
+.admin-product { min-width: 0 !important; flex: 1 1 auto !important; display: flex !important; align-items: center !important; gap: 8px !important; }
+.admin-product img { width: 42px !important; height: 42px !important; flex: 0 0 42px !important; object-fit: cover !important; border-radius: 7px !important; }
+.admin-product b, .admin-product small { display: block !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+.admin-product b { font-size: 11px !important; }
+.admin-product small { font-size: 8px !important; color: var(--muted) !important; margin-top: 2px !important; }
+.admin-actions { flex: 0 0 auto !important; display: flex !important; gap: 5px !important; }
+.admin-actions button { width: 30px !important; height: 30px !important; border-radius: 7px !important; }
+
+@media (max-width: 700px) {
+  .admin-overlay {
+    padding: 8px !important;
+    align-items: center !important;
+  }
+
+  .admin-modal {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    max-height: calc(100vh - 16px) !important;
+    border-radius: 16px !important;
+  }
+
+  .admin-head {
+    padding: 13px 14px 11px !important;
+  }
+
+  .admin-head h2 { font-size: 22px !important; }
+  .admin-head .eyebrow { font-size: 8px !important; margin-bottom: 4px !important; }
+
+  .admin-form {
+    padding: 13px 14px !important;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .form-grid label:nth-child(3),
+  .form-grid label:nth-child(7) {
+    grid-column: auto !important;
+  }
+
+  .admin-form input:not([type="checkbox"]),
+  .admin-form textarea,
+  .admin-form select {
+    height: 36px !important;
+    min-height: 36px !important;
+    margin-top: 3px !important;
+    padding: 7px 9px !important;
+    font-size: 12px !important;
+  }
+
+  .admin-form textarea { height: 52px !important; min-height: 52px !important; }
+  .field-help { font-size: 8px !important; }
+
+  .admin-form-actions {
+    margin-top: 10px !important;
+    gap: 7px !important;
+  }
+
+  .admin-form-actions button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 0 8px !important;
+    font-size: 10px !important;
+  }
+
+  .admin-list {
+    padding: 12px 14px 16px !important;
+  }
+}
