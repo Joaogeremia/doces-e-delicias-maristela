@@ -1,0 +1,110 @@
+/* Acabamento visual final — camada leve, sem alterar a estrutura do site. */
+
+:root{
+  --rose-soft:#f6e9e7;
+  --rose-border:#e4c8c5;
+}
+
+/* Microinterações */
+.primary,.secondary,.quick-add,.cart-btn,.icon-btn,.text-link,
+.category-sidebar>button,.mobile-categories button,.mobile-nav button,
+.mobile-menu-category button,.modal-close,.qty button{
+  transition:transform .18s ease,background-color .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+
+.primary:hover,.secondary:hover,.quick-add:hover{transform:translateY(-1px)}
+.primary:active,.secondary:active,.quick-add:active,.cart-btn:active{transform:translateY(0) scale(.98)}
+
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--rose);
+  outline-offset:3px;
+}
+
+/* Cabeçalho mais refinado */
+.header{box-shadow:0 4px 22px rgba(67,38,35,.035)}
+.header nav a{position:relative;padding:8px 0}
+.header nav a::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:2px;height:1.5px;
+  background:var(--rose);
+  transform:scaleX(0);
+  transform-origin:center;
+  transition:transform .18s ease;
+}
+.header nav a:hover::after{transform:scaleX(1)}
+
+/* Cards mais premium, sem aumentar */
+.product-card{position:relative}
+.product-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);
+}
+.product-info h3{letter-spacing:-.15px}
+.product-cat{letter-spacing:1.4px}
+.quick-add{border:1px solid transparent}
+.quick-add:hover{box-shadow:0 7px 18px rgba(182,95,104,.16)}
+
+/* Botão de compra principal */
+.primary{box-shadow:0 9px 22px rgba(182,95,104,.18)}
+.primary:hover{box-shadow:0 11px 26px rgba(182,95,104,.24)}
+
+/* Busca */
+.search:focus-within{border-color:var(--rose-border);box-shadow:0 0 0 3px rgba(182,95,104,.08)}
+
+/* Separação visual mais elegante das seções */
+.featured{padding-top:72px}
+.menu-section{padding-top:72px}
+.about{padding-top:74px;padding-bottom:90px}
+
+/* Imagens */
+.hero-photo img,.about-photo img{filter:saturate(.96)}
+
+/* Rodapé */
+footer{border-top:1px solid rgba(255,255,255,.06)}
+footer>a{transition:opacity .18s ease,transform .18s ease}
+footer>a:hover{opacity:.82;transform:translateY(-1px)}
+
+/* Respeita usuários que preferem menos movimento */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+
+@media(max-width:700px){
+  .header{height:70px;padding:0 16px}
+  .brand-mark{width:36px;height:36px;font-size:21px}
+  .brand b{font-size:16px}
+  .brand small{font-size:9px}
+  .hero{padding:38px 16px 42px}
+  .hero h1{font-size:42px;letter-spacing:-1px}
+  .hero-buttons{display:grid;grid-template-columns:1fr;gap:8px}
+  .hero-buttons .primary,.hero-buttons .secondary{width:100%;min-height:46px}
+  .hero-photo img{height:390px;border-radius:105px 105px 20px 20px}
+  .hero-badge{left:10px;bottom:15px;padding:10px 13px}
+  .trust{padding:18px 16px;display:grid;grid-template-columns:1fr;gap:13px}
+  .trust>div{gap:9px}
+  .featured,.menu-section,.about{padding-left:16px;padding-right:16px}
+  .featured{padding-top:58px}
+  .menu-section{padding-top:58px}
+  .about{padding-top:58px;padding-bottom:80px}
+  .section-head{align-items:flex-start;flex-direction:column;gap:16px;margin-bottom:20px}
+  .section-head h2{font-size:36px}
+  .search{width:100%;height:44px}
+  .featured-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .compact .product-img{height:145px}
+  .compact .product-info{padding:10px}
+  .compact .product-info h3{font-size:15px}
+  .product-grid{gap:10px}
+  .product-img{height:170px}
+  .product-info{padding:11px}
+  .product-info h3{font-size:17px}
+  .quick-add{height:34px}
+  .order-banner{margin:10px 16px 45px;padding:34px 22px;border-radius:22px}
+  .order-banner h2{font-size:34px}
+  .order-cake{font-size:72px;margin-top:10px}
+  footer{padding:28px 16px 92px;flex-direction:column;align-items:flex-start}
+}
