@@ -1,10 +1,6 @@
 /* Acabamento visual final — camada leve, sem alterar a estrutura do site. */
 :root{--rose-soft:#f6e9e7;--rose-border:#e4c8c5}
 
-/* Evita que qualquer texto solto deixado por scripts antigos apareça fora do aplicativo. */
-body{color:transparent}
-#root{color:var(--dark)}
-
 .primary,.secondary,.quick-add,.cart-btn,.icon-btn,.text-link,.category-sidebar>button,.mobile-categories button,.mobile-nav button,.mobile-menu-category button,.modal-close,.qty button{transition:transform .18s ease,background-color .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease}
 .primary:hover,.secondary:hover,.quick-add:hover{transform:translateY(-1px)}
 .primary:active,.secondary:active,.quick-add:active,.cart-btn:active{transform:translateY(0) scale(.98)}
@@ -17,6 +13,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .search:focus-within{border-color:var(--rose-border);box-shadow:0 0 0 3px rgba(182,95,104,.08)}
 .featured{padding-top:72px}.menu-section{padding-top:72px}.about{padding-top:74px;padding-bottom:90px}.hero-photo img,.about-photo img{filter:saturate(.96)}
 footer{border-top:1px solid rgba(255,255,255,.06)}footer>a{transition:opacity .18s ease,transform .18s ease}footer>a:hover{opacity:.82;transform:translateY(-1px)}
+.pdf-menu-button{border:1px solid var(--line)!important;background:#fffdfa!important;color:var(--dark)!important;border-radius:10px!important;padding:10px 13px!important;font-weight:700!important;cursor:pointer!important;margin-right:8px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:38px!important;visibility:visible!important;opacity:1!important}
+.pdf-menu-button:hover{background:var(--blush)!important}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 @media(max-width:700px){
 .header{height:70px;padding:0 16px}.brand-mark{width:36px;height:36px;font-size:21px}.brand b{font-size:16px}.brand small{font-size:9px}
