@@ -1,19 +1,15 @@
-/* Correção real do painel: compacta o painel que aparece como .admin-panel. */
-.admin-panel{width:min(760px,calc(100% - 32px)) !important;height:auto !important;max-height:92vh !important;overflow-y:auto !important;padding:22px !important;border-radius:22px !important;box-sizing:border-box !important;}
-.admin-panel .drawer-head{position:sticky;top:-22px;z-index:5;background:var(--cream);padding-top:22px;}
-.admin-panel .admin-form{padding:16px !important;border-radius:14px !important;}
-.admin-panel .admin-form h3{font-size:20px !important;margin:0 0 14px !important;}
-.admin-panel .admin-form label{margin-bottom:9px !important;}
-.admin-panel .admin-form input,.admin-panel .admin-form textarea,.admin-panel .admin-form select{padding:9px 10px !important;margin-top:4px !important;box-sizing:border-box !important;}
-.admin-panel .admin-form textarea{min-height:64px !important;}
-.admin-panel .form-actions{margin-top:12px !important;}
-.admin-panel .admin-tip{margin-top:10px !important;padding:9px !important;}
-@media(max-width:700px){
-  .admin-panel{width:calc(100% - 20px) !important;max-height:92vh !important;padding:14px !important;border-radius:18px !important;}
-  .admin-panel .drawer-head{top:-14px;padding-top:14px;}
-  .admin-panel .drawer-head h2{font-size:23px !important;}
-  .admin-panel .admin-form{padding:12px !important;}
-  .admin-panel .two{grid-template-columns:1fr !important;gap:0 !important;}
-  .admin-panel .checks{flex-direction:column !important;gap:7px !important;}
-  .admin-panel .form-actions{position:sticky;bottom:-14px;background:#fff;padding:9px 0 2px !important;margin-inline:-12px !important;padding-inline:12px !important;border-top:1px solid var(--line);}
-}
+/* Ajuste da área administrativa: usa os nomes reais do componente Admin. */
+.admin-modal{width:min(760px,calc(100% - 32px)) !important;max-height:92vh !important;height:auto !important;overflow-y:auto !important;padding:22px !important;box-sizing:border-box !important;border-radius:20px !important;}
+.admin-head{position:sticky !important;top:-22px !important;z-index:10 !important;background:var(--cream) !important;padding:22px 0 12px !important;margin:0 !important;}
+.admin-head h2{font-size:28px !important;margin:0 !important;}
+.admin-form{padding:16px !important;margin:0 !important;}
+.form-grid{gap:10px !important;}
+.admin-form label{gap:4px !important;margin:0 !important;}
+.admin-form input:not([type="checkbox"]),.admin-form textarea,.admin-form select{min-height:42px !important;height:auto !important;padding:9px 10px !important;box-sizing:border-box !important;margin:0 !important;}
+.admin-form textarea{min-height:70px !important;}
+.field-help{font-size:11px !important;line-height:1.35 !important;margin-top:2px !important;}
+.check{display:flex !important;align-items:center !important;gap:8px !important;min-height:30px !important;}
+.check input{width:16px !important;height:16px !important;margin:0 !important;}
+.admin-form-actions{display:flex !important;justify-content:flex-end !important;gap:10px !important;margin-top:12px !important;}
+.admin-list{margin-top:16px !important;}
+@media(max-width:700px){.admin-overlay{padding:10px !important;align-items:center !important;}.admin-modal{width:calc(100% - 12px) !important;max-height:90vh !important;padding:14px !important;border-radius:18px !important;}.admin-head{top:-14px !important;padding:14px 0 10px !important;}.admin-head h2{font-size:22px !important;}.admin-form{padding:12px 0 !important;}.form-grid{grid-template-columns:1fr !important;gap:9px !important;}.admin-form-actions{position:sticky !important;bottom:-14px !important;z-index:8 !important;background:var(--cream) !important;padding:10px 0 2px !important;margin-top:8px !important;border-top:1px solid var(--line) !important;}.admin-form-actions button{flex:1 !important;}}
