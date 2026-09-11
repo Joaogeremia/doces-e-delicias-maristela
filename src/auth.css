@@ -1,0 +1,18 @@
+.auth-overlay{align-items:center;justify-content:center;padding:20px}
+.auth-card{width:min(430px,100%);background:var(--cream);border:1px solid var(--line);border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.22);padding:28px;position:relative}
+.auth-card .modal-close{position:absolute;right:14px;top:14px}
+.auth-brand{display:flex;align-items:center;gap:11px;margin-bottom:24px}
+.auth-brand .brand-mark{width:44px;height:44px}
+.auth-title{font:600 30px/1.1 'Playfair Display';margin:0 0 8px}
+.auth-subtitle{font-size:12px;line-height:1.6;color:var(--muted);margin:0 0 22px}
+.auth-form label{display:block;font-size:10px;font-weight:700;margin-bottom:14px}
+.auth-form input{display:block;width:100%;margin-top:7px;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;outline:0;color:var(--dark)}
+.auth-form input:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(182,95,104,.10)}
+.auth-submit{width:100%;min-height:46px;margin-top:5px}
+.auth-error{margin:0 0 14px;padding:10px 12px;border-radius:10px;background:#faeeee;color:#a33f48;font-size:11px;line-height:1.5}
+.auth-loading{font-size:11px;color:var(--muted);text-align:center;padding:12px}
+.admin-user-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin:-5px 0 14px;background:#f3e6e2;border-radius:11px;font-size:10px;color:var(--muted)}
+.admin-user-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-logout{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 10px;font-size:10px;font-weight:700;color:var(--dark);display:inline-flex;align-items:center;gap:5px}
+.admin-logout:hover{background:#fffdfb;border-color:#d8c6c1}
+@media(max-width:600px){.auth-overlay{padding:12px}.auth-card{padding:23px 18px;border-radius:18px}.auth-title{font-size:28px}}
