@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ShoppingBag, Search, Plus, Minus, X, Instagram, MapPin, MessageCircle, ChevronRight, CakeSlice, Heart, Settings, Pencil, Trash2, ImagePlus, Home, Menu, MoreHorizontal, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, Search, Plus, Minus, X, Instagram, MapPin, MessageCircle, ChevronRight, CakeSlice, Heart, Settings, Pencil, Trash2, Home, Menu, MoreHorizontal, LogOut } from 'lucide-react';
 import './styles.css';
+import './auth.css';
+import { supabase } from './supabase.js';
 
 const initialProducts = [
   { id: 1, category: 'Bolos', name: 'Bolo de Chocolate', description: 'Massa fofinha, brigadeiro cremoso e cobertura de chocolate.', price: 55, unit: 'A partir de', minQuantity: 1, image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85', available: true, featured: true },
@@ -22,6 +24,25 @@ function App() {
   const [modal, setModal] = useState(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      if (mounted) {
+        setSession(currentSession);
+        setAuthLoading(false);
+      }
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+      setAuthLoading(false);
+      if (!currentSession) setAdmin(false);
+    });
+    return () => { mounted = false; subscription.unsubscribe(); };
+  }, []);
 
   const save = next => { setProducts(next); localStorage.setItem('maristela-products', JSON.stringify(next)); };
   const categories = ['Todos', ...new Set(products.map(p => p.category))];
@@ -32,13 +53,14 @@ function App() {
   const cartCount = cart.length;
   const checkout = () => { const valid = cart.every(p => p.qty >= Math.max(1, Number(p.minQuantity) || 1)); if (!valid) return; const text = `Olá, Maristela! 😊 Gostaria de fazer um pedido:\n\n${cart.map(p => `🍰 ${p.name} — ${p.qty}x — R$ ${(p.price*p.qty).toFixed(2).replace('.', ',')}`).join('\n')}\n\n💰 Total aproximado: R$ ${total.toFixed(2).replace('.', ',')}\n\nGostaria de confirmar disponibilidade e combinar a entrega/retirada.`; window.open(`https://wa.me/${WA}?text=${encodeURIComponent(text)}`, '_blank'); };
   const goTo = id => { setMobileMenu(false); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); };
+  const openAdmin = () => { if (authLoading) return; if (session) setAdmin(true); else setLoginOpen(true); };
 
   return <>
     <header className="header">
       <button className="mobile-menu-btn" onClick={() => setMobileMenu(true)} aria-label="Abrir menu"><Menu size={22}/></button>
       <a className="brand" href="#inicio" onClick={() => setMobileMenu(false)}><span className="brand-mark">M</span><span><b>Doces e Delícias</b><small>da Maristela</small></span></a>
       <nav><a href="#inicio">Início</a><a href="#cardapio">Cardápio</a><a href="#sobre">Sobre</a><a href="#encomendas">Encomendas</a></nav>
-      <div className="header-actions"><button className="icon-btn desktop-admin" onClick={() => setAdmin(true)} title="Área da Maristela"><Settings size={18}/></button><button className="cart-btn" onClick={() => setModal('cart')} aria-label="Abrir carrinho"><ShoppingBag size={18}/>{cartCount > 0 && <span>{cartCount}</span>}</button></div>
+      <div className="header-actions"><button className="icon-btn desktop-admin" onClick={openAdmin} title="Área da Maristela"><Settings size={18}/></button><button className="cart-btn" onClick={() => setModal('cart')} aria-label="Abrir carrinho"><ShoppingBag size={18}/>{cartCount > 0 && <span>{cartCount}</span>}</button></div>
     </header>
 
     <main id="inicio">
@@ -61,9 +83,11 @@ function App() {
 
     <div className="mobile-bottom-nav"><button onClick={()=>goTo('inicio')}><Home size={19}/><span>Início</span></button><button onClick={()=>goTo('cardapio')}><CakeSlice size={19}/><span>Cardápio</span></button><button className="mobile-cart" onClick={()=>setModal('cart')}><ShoppingBag size={19}/>{cartCount > 0 && <b>{cartCount}</b>}<span>Carrinho</span></button><button onClick={()=>setMobileMenu(true)}><MoreHorizontal size={20}/><span>Mais</span></button></div>
 
-    {mobileMenu && <MobileMenu close={()=>setMobileMenu(false)} goTo={goTo} openAdmin={()=>{setMobileMenu(false);setAdmin(true)}} />}
+    {mobileMenu && <MobileMenu close={()=>setMobileMenu(false)} goTo={goTo} openAdmin={openAdmin} />}
     {selectedProduct && <ProductModal p={selectedProduct} add={add} close={()=>setSelectedProduct(null)} />}
-    {modal==='cart' && <Cart cart={cart} setCart={setCart} total={total} checkout={checkout} close={()=>setModal(null)}/>} {admin && <Admin products={products} save={save} close={()=>setAdmin(false)}/>}</>;
+    {modal==='cart' && <Cart cart={cart} setCart={setCart} total={total} checkout={checkout} close={()=>setModal(null)}/>} {admin && session && <Admin products={products} save={save} close={()=>setAdmin(false)} session={session} />}
+    {loginOpen && <Login close={()=>setLoginOpen(false)} onSuccess={()=>{setLoginOpen(false);setAdmin(true)}} />}
+  </>;
 }
 
 function ProductCard({p,add,compact,onOpen}) { const min = Math.max(1, Number(p.minQuantity) || 1); return <article className={'product-card '+(compact?'compact':'')}><div className="product-image-button"><div className="product-img"><img src={p.image} alt={p.name}/>{p.featured && <span>Queridinho</span>}</div></div><div className="product-info"><div className="product-title-button"><p className="product-cat">{p.category}</p><h3>{p.name}</h3></div>{!compact && <p className="product-description">{p.description}</p>}<div className="product-bottom"><div><strong>R$ {p.price.toFixed(2).replace('.', ',')}</strong><small>{p.unit}</small>{min > 1 && <small className="min-order">Mín. {min}</small>}</div><button className="quick-add" onClick={()=>onOpen?.(p)} aria-label={`Adicionar ${p.name}`}><Plus size={18}/><span>Adicionar</span></button></div></div></article> }
@@ -74,6 +98,26 @@ function MobileMenu({close,goTo,openAdmin}) { return <div className="overlay mob
 
 function Cart({cart,setCart,total,checkout,close}) { return <div className="overlay" onMouseDown={e=>e.target===e.currentTarget&&close()}><div className="cart-modal"><div className="cart-head"><div><p className="eyebrow">SEU PEDIDO</p><h2>Meu carrinho</h2></div><button className="modal-close" onClick={close}><X/></button></div>{cart.length===0?<div className="empty-cart"><ShoppingBag size={34}/><h3>Seu carrinho está vazio</h3><p>Escolha uma delícia para começar.</p><button className="primary" onClick={close}>Ver cardápio</button></div>:<><div className="cart-list">{cart.map(p=>{const min=Math.max(1,Number(p.minQuantity)||1);return <div className="cart-item" key={p.id}><img src={p.image} alt=""/><div className="cart-item-info"><b>{p.name}</b><small>R$ {p.price.toFixed(2).replace('.', ',')}</small><div className="qty"><button onClick={()=>setCart(c=>c.map(x=>x.id===p.id?{...x,qty:Math.max(min,x.qty-1)}:x))} disabled={p.qty<=min}><Minus size={14}/></button><span>{p.qty}</span><button onClick={()=>setCart(c=>c.map(x=>x.id===p.id?{...x,qty:x.qty+1}:x))}><Plus size={14}/></button></div>{min>1&&<small>Pedido mínimo: {min}</small>}</div><b className="cart-line-total">R$ {(p.price*p.qty).toFixed(2).replace('.', ',')}</b><button className="remove" onClick={()=>setCart(c=>c.filter(x=>x.id!==p.id))}><X size={15}/></button></div>})}</div><div className="cart-summary"><span>Total aproximado</span><strong>R$ {total.toFixed(2).replace('.', ',')}</strong></div><p className="cart-note">O valor final pode variar conforme tamanho e personalização. Confirmaremos tudo pelo WhatsApp.</p><button className="primary checkout" onClick={checkout}><MessageCircle size={18}/> Finalizar pedido no WhatsApp</button></>}</div></div> }
 
-function Admin({products,save,close}) { const empty={name:'',category:'Bolos',description:'',price:'',unit:'A partir de',minQuantity:'1',image:'',available:true,featured:false}; const [form,setForm]=useState(empty); const [editing,setEditing]=useState(null); const submit=e=>{e.preventDefault();const minQuantity=Math.max(1,Number(form.minQuantity)||1);const item={...form,id:editing??Date.now(),price:Number(form.price),minQuantity};const next=editing?products.map(p=>p.id===editing?item:p):[...products,item];save(next);setForm(empty);setEditing(null)}; const edit=p=>setEditing(p.id)||setForm({...p,minQuantity:Math.max(1,Number(p.minQuantity)||1)}); return <div className="overlay admin-overlay"><div className="admin-modal"><div className="admin-head"><div><p className="eyebrow">ÁREA DA MARISTELA</p><h2>Gerenciar cardápio</h2></div><button className="modal-close" onClick={close}><X/></button></div><form className="admin-form" onSubmit={submit}><div className="form-grid"><label>Nome<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Categoria<input required value={form.category} onChange={e=>setForm({...form,category:e.target.value})}/></label><label>Descrição<textarea required value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label><label>Preço<input required type="number" min="0" step="0.01" value={form.price} onChange={e=>setForm({...form,price:e.target.value})}/></label><label>Unidade<input required value={form.unit} onChange={e=>setForm({...form,unit:e.target.value})}/></label><label>Pedido mínimo<input required type="number" min="1" step="1" value={form.minQuantity} onChange={e=>setForm({...form,minQuantity:e.target.value})}/><small className="field-help">Quantidade mínima deste produto que o cliente precisa adicionar ao pedido.</small></label><label>Imagem (URL)<input value={form.image} onChange={e=>setForm({...form,image:e.target.value})}/></label><label className="check"><input type="checkbox" checked={form.available} onChange={e=>setForm({...form,available:e.target.checked})}/> Disponível</label><label className="check"><input type="checkbox" checked={form.featured} onChange={e=>setForm({...form,featured:e.target.checked})}/> Destaque</label></div><div className="admin-form-actions"><button type="button" className="secondary" onClick={()=>{setForm(empty);setEditing(null)}}>Limpar</button><button className="primary" type="submit">{editing?'Salvar alterações':'Adicionar produto'}</button></div></form><div className="admin-list">{products.map(p=><div className="admin-row" key={p.id}><div className="admin-product"><img src={p.image} alt=""/><div><b>{p.name}</b><small>R$ {p.price.toFixed(2).replace('.', ',')} • {p.category}{Math.max(1,Number(p.minQuantity)||1)>1?` • Mín. ${Math.max(1,Number(p.minQuantity)||1)}`:''}</small></div></div><div className="admin-actions"><button onClick={()=>edit(p)} title="Editar"><Pencil size={16}/></button><button onClick={()=>save(products.filter(x=>x.id!==p.id))} title="Excluir"><Trash2 size={16}/></button></div></div>)}</div></div></div> }
+function Login({close,onSuccess}) {
+  const [email,setEmail] = useState('');
+  const [password,setPassword] = useState('');
+  const [loading,setLoading] = useState(false);
+  const [error,setError] = useState('');
+  const submit = async e => {
+    e.preventDefault();
+    setLoading(true); setError('');
+    const { error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (authError) {
+      setError('E-mail ou senha incorretos. Confira os dados e tente novamente.');
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    onSuccess();
+  };
+  return <div className="overlay auth-overlay" onMouseDown={e=>e.target===e.currentTarget&&close()}><div className="auth-card"><button className="modal-close" onClick={close} aria-label="Fechar"><X size={19}/></button><div className="auth-brand"><span className="brand-mark">M</span><span><b>Doces e Delícias</b><small>da Maristela</small></span></div><p className="eyebrow">ÁREA RESTRITA</p><h2 className="auth-title">Entrar no painel</h2><p className="auth-subtitle">Acesse o gerenciamento do cardápio usando sua conta administrativa.</p>{error&&<p className="auth-error">{error}</p>}<form className="auth-form" onSubmit={submit}><label>E-mail<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="seu@email.com"/></label><label>Senha<input type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Sua senha"/></label><button className="primary auth-submit" type="submit" disabled={loading}>{loading?'Entrando...':'Entrar'}</button></form></div></div>
+}
+
+function Admin({products,save,close,session}) { const empty={name:'',category:'Bolos',description:'',price:'',unit:'A partir de',minQuantity:'1',image:'',available:true,featured:false}; const [form,setForm]=useState(empty); const [editing,setEditing]=useState(null); const submit=e=>{e.preventDefault();const minQuantity=Math.max(1,Number(form.minQuantity)||1);const item={...form,id:editing??Date.now(),price:Number(form.price),minQuantity};const next=editing?products.map(p=>p.id===editing?item:p):[...products,item];save(next);setForm(empty);setEditing(null)}; const edit=p=>setEditing(p.id)||setForm({...p,minQuantity:Math.max(1,Number(p.minQuantity)||1)}); const logout=async()=>{await supabase.auth.signOut();close()}; return <div className="overlay admin-overlay"><div className="admin-modal"><div className="admin-head"><div><p className="eyebrow">ÁREA DA MARISTELA</p><h2>Gerenciar cardápio</h2></div><button className="modal-close" onClick={close}><X/></button></div><div className="admin-user-bar"><span>Conectado como {session?.user?.email || 'usuário administrativo'}</span><button className="admin-logout" onClick={logout}><LogOut size={13}/> Sair</button></div><form className="admin-form" onSubmit={submit}><div className="form-grid"><label>Nome<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Categoria<select required value={form.category} onChange={e=>setForm({...form,category:e.target.value})}><option value="Bolos">Bolos</option><option value="Doces">Doces</option><option value="Kits Festa">Kits Festa</option><option value="Sobremesas">Sobremesas</option><option value="Kits e Cestas">Kits e Cestas</option></select></label><label>Descrição<textarea required value={form.description} onChange={e=>setForm({...form,description:e.target.value})}/></label><label>Preço<input required type="number" min="0" step="0.01" value={form.price} onChange={e=>setForm({...form,price:e.target.value})}/></label><label>Unidade<input required value={form.unit} onChange={e=>setForm({...form,unit:e.target.value})}/></label><label>Pedido mínimo<input required type="number" min="1" step="1" value={form.minQuantity} onChange={e=>setForm({...form,minQuantity:e.target.value})}/><small className="field-help">Quantidade mínima deste produto que o cliente precisa adicionar ao pedido.</small></label><label>Imagem (URL)<input value={form.image} onChange={e=>setForm({...form,image:e.target.value})}/></label><label className="check"><input type="checkbox" checked={form.available} onChange={e=>setForm({...form,available:e.target.checked})}/> Disponível</label><label className="check"><input type="checkbox" checked={form.featured} onChange={e=>setForm({...form,featured:e.target.checked})}/> Destaque</label></div><div className="admin-form-actions"><button type="button" className="secondary" onClick={()=>{setForm(empty);setEditing(null)}}>Limpar</button><button className="primary" type="submit">{editing?'Salvar alterações':'Adicionar produto'}</button></div></form><div className="admin-list">{products.map(p=><div className="admin-row" key={p.id}><div className="admin-product"><img src={p.image} alt=""/><div><b>{p.name}</b><small>R$ {p.price.toFixed(2).replace('.', ',')} • {p.category}{Math.max(1,Number(p.minQuantity)||1)>1?` • Mín. ${Math.max(1,Number(p.minQuantity)||1)}`:''}</small></div></div><div className="admin-actions"><button onClick={()=>edit(p)} title="Editar"><Pencil size={16}/></button><button onClick={()=>save(products.filter(x=>x.id!==p.id))} title="Excluir"><Trash2 size={16}/></button></div></div>)}</div></div></div> }
 
 createRoot(document.getElementById('root')).render(<App/>);
