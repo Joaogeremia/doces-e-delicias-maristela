@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://cmldypvguivwwymnpnyl.supabase.co';
+const SUPABASE_URL = 'https://cmldypvguivvwymnpnyl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_-QKdsvhcZskCvEREagS_LA_ThZ1oGBW';
 const supabaseReset = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
@@ -21,6 +21,8 @@ function addForgotPasswordLink() {
 
   link.addEventListener('click', async () => {
     const email = emailInput.value.trim();
+    const redirectTo = `${window.location.origin}/`;
+
     if (!email) {
       emailInput.focus();
       emailInput.setCustomValidity('Digite seu e-mail para recuperar a senha.');
@@ -32,24 +34,66 @@ function addForgotPasswordLink() {
     link.disabled = true;
     link.textContent = 'Enviando...';
 
-    const { error } = await supabaseReset.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/`,
-    });
+    try {
+      console.info('[Maristela Password Reset] Iniciando recuperação', {
+        email,
+        redirectTo,
+        origin: window.location.origin,
+        online: navigator.onLine,
+        supabaseUrl: SUPABASE_URL,
+      });
 
-    if (error) {
-      console.error('[Maristela Password Reset]', error);
+      const result = await supabaseReset.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+
+      console.info('[Maristela Password Reset] Resposta do Supabase', {
+        ok: !result.error,
+        errorName: result.error?.name ?? null,
+        errorMessage: result.error?.message ?? null,
+        errorStatus: result.error?.status ?? null,
+        errorCode: result.error?.code ?? null,
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+
+      link.textContent = 'E-mail enviado!';
+      alert('Enviamos o link de recuperação para seu e-mail. Verifique também a caixa de spam.');
+      setTimeout(() => {
+        link.disabled = false;
+        link.textContent = 'Esqueci minha senha';
+      }, 3000);
+    } catch (error) {
+      const diagnostic = {
+        name: error?.name ?? 'UnknownError',
+        message: error?.message ?? String(error),
+        status: error?.status ?? null,
+        code: error?.code ?? null,
+        online: navigator.onLine,
+        origin: window.location.origin,
+        redirectTo,
+        supabaseUrl: SUPABASE_URL,
+      };
+
+      console.error('[Maristela Password Reset] ERRO COMPLETO', error);
+      console.error('[Maristela Password Reset] DIAGNÓSTICO', diagnostic);
+
       link.disabled = false;
       link.textContent = 'Esqueci minha senha';
-      alert(`Não foi possível enviar o e-mail: ${error.message}`);
-      return;
+
+      const details = [
+        `Erro: ${diagnostic.name}`,
+        `Mensagem: ${diagnostic.message}`,
+        `Status: ${diagnostic.status ?? 'não informado'}`,
+        `Código: ${diagnostic.code ?? 'não informado'}`,
+        `Online: ${diagnostic.online ? 'sim' : 'não'}`,
+        `Origem: ${diagnostic.origin}`,
+      ].join('\n');
+
+      alert(`Não foi possível enviar o e-mail.\n\n${details}\n\nAbra o console do navegador (F12 > Console) se precisarmos investigar mais.`);
     }
-
-    link.textContent = 'E-mail enviado!';
-    alert('Enviamos o link de recuperação para seu e-mail. Verifique também a caixa de spam.');
-    setTimeout(() => {
-      link.disabled = false;
-      link.textContent = 'Esqueci minha senha';
-    }, 3000);
   });
 
   passwordInput.closest('label')?.insertAdjacentElement('afterend', link);
