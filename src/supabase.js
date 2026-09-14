@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = 'https://cmldypvguivwwymnpnyl.supabase.co';
+// URL correta do projeto Supabase.
+const SUPABASE_URL = 'https://cmldypvguivvwymnpnyl.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_-QKdsvhcZskCvEREagS_LA_ThZ1oGBW';
 
 const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -34,8 +35,8 @@ function showPasswordRecoveryModal() {
       <h2>Redefinir senha</h2>
       <p>Digite uma nova senha para acessar a Área da Maristela.</p>
       <form id="maristela-recovery-form">
-        <label>Nova senha<input id="maristela-new-password" type="password" autocomplete="new-password" minlength="6" required placeholder="Mínimo de 6 caracteres"></label>
-        <label>Confirmar senha<input id="maristela-confirm-password" type="password" autocomplete="new-password" minlength="6" required placeholder="Digite novamente"></label>
+        <label>Nova senha<div class="maristela-password-wrap"><input id="maristela-new-password" type="password" autocomplete="new-password" minlength="6" required placeholder="Mínimo de 6 caracteres"><button type="button" class="maristela-password-eye" data-target="maristela-new-password" aria-label="Mostrar senha">◉</button></div></label>
+        <label>Confirmar senha<div class="maristela-password-wrap"><input id="maristela-confirm-password" type="password" autocomplete="new-password" minlength="6" required placeholder="Digite novamente"><button type="button" class="maristela-password-eye" data-target="maristela-confirm-password" aria-label="Mostrar senha">◉</button></div></label>
         <div id="maristela-recovery-error" class="maristela-recovery-error" hidden></div>
         <button type="submit" id="maristela-recovery-submit">Salvar nova senha</button>
       </form>
@@ -55,8 +56,11 @@ function showPasswordRecoveryModal() {
     .maristela-recovery-card h2{font-family:Georgia,serif;font-size:30px;line-height:1.1;margin:0 0 8px}
     .maristela-recovery-card>p{font-size:12px;line-height:1.6;color:#806f68;margin:0 0 22px}
     #maristela-recovery-form label{display:block;font-size:10px;font-weight:700;margin-bottom:14px}
-    #maristela-recovery-form input{display:block;box-sizing:border-box;width:100%;margin-top:7px;border:1px solid #e5d7ce;border-radius:10px;padding:12px;background:#fff;outline:0;color:#342522;font-size:14px}
+    .maristela-password-wrap{position:relative;margin-top:7px}
+    #maristela-recovery-form input{display:block;box-sizing:border-box;width:100%;margin-top:0;border:1px solid #e5d7ce;border-radius:10px;padding:12px 42px 12px 12px;background:#fff;outline:0;color:#342522;font-size:14px}
     #maristela-recovery-form input:focus{border-color:#b65f68;box-shadow:0 0 0 3px rgba(182,95,104,.10)}
+    .maristela-password-eye{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;background:transparent;color:#8a7770;cursor:pointer;font-size:15px;padding:0}
+    .maristela-password-eye:hover{color:#b65f68}
     #maristela-recovery-submit{width:100%;min-height:46px;margin-top:5px;border:0;border-radius:10px;background:#b65f68;color:#fff;font-weight:700;cursor:pointer}
     #maristela-recovery-submit:disabled{opacity:.65;cursor:wait}
     .maristela-recovery-error{margin:0 0 14px;padding:10px 12px;border-radius:10px;background:#faeeee;color:#a33f48;font-size:11px;line-height:1.5}
@@ -65,6 +69,16 @@ function showPasswordRecoveryModal() {
 
   document.head.appendChild(style);
   document.body.appendChild(overlay);
+
+  overlay.querySelectorAll('.maristela-password-eye').forEach(button => {
+    button.addEventListener('click', () => {
+      const input = document.getElementById(button.dataset.target);
+      const visible = input.type === 'text';
+      input.type = visible ? 'password' : 'text';
+      button.textContent = visible ? '◉' : '◌';
+      button.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
+    });
+  });
 
   const form = overlay.querySelector('#maristela-recovery-form');
   const password = overlay.querySelector('#maristela-new-password');
@@ -115,10 +129,43 @@ function isRecoveryUrl() {
   return query.has('code') || query.get('type') === 'recovery' || hash.get('type') === 'recovery' || hash.has('access_token') || hash.has('refresh_token');
 }
 
-function openRecoveryWhenReady() {
+async function openRecoveryWhenReady() {
   if (!isRecoveryUrl()) return;
-  if (document.body) showPasswordRecoveryModal();
-  else window.addEventListener('DOMContentLoaded', showPasswordRecoveryModal, { once: true });
+
+  // Aguarda o Supabase processar o token/código antes de abrir o formulário.
+  // Isso evita o falso erro "Falta sessão de autenticação!".
+  try {
+    let { data } = await client.auth.getSession();
+
+    if (!data.session) {
+      const code = new URLSearchParams(window.location.search).get('code');
+      if (code) {
+        const result = await client.auth.exchangeCodeForSession(code);
+        if (result.error) console.error('[Maristela Recovery Code]', result.error);
+      }
+      ({ data } = await client.auth.getSession());
+    }
+
+    if (data.session) {
+      if (document.body) showPasswordRecoveryModal();
+      else window.addEventListener('DOMContentLoaded', showPasswordRecoveryModal, { once: true });
+    } else {
+      console.error('[Maristela Password Recovery] Link recebido, mas nenhuma sessão foi criada.');
+      if (document.body) {
+        const existing = document.getElementById('maristela-password-recovery');
+        if (!existing) {
+          const message = document.createElement('div');
+          message.id = 'maristela-recovery-session-error';
+          message.textContent = 'O link de recuperação expirou ou não pôde ser validado. Solicite um novo link.';
+          message.style.cssText = 'position:fixed;z-index:99999;left:50%;top:30px;transform:translateX(-50%);padding:13px 18px;border-radius:10px;background:#faeeee;color:#a33f48;font:700 12px Arial;box-shadow:0 10px 30px rgba(0,0,0,.15)';
+          document.body.appendChild(message);
+          setTimeout(() => message.remove(), 7000);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[Maristela Password Recovery] Falha ao processar sessão:', error);
+  }
 }
 
 client.auth.onAuthStateChange((event) => {
@@ -128,8 +175,6 @@ client.auth.onAuthStateChange((event) => {
   }
 });
 
-// Fallback: also detect the recovery URL directly. This covers cases where the
-// PASSWORD_RECOVERY event happens before the application finishes mounting.
 if (typeof window !== 'undefined') {
   openRecoveryWhenReady();
   window.addEventListener('load', openRecoveryWhenReady, { once: true });
