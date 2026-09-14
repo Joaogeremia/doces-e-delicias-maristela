@@ -104,9 +104,21 @@ function showPasswordRecoveryModal() {
 
     submit.textContent = 'Senha atualizada!';
     await client.auth.signOut();
-    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    window.history.replaceState({}, document.title, window.location.pathname);
     window.location.reload();
   });
+}
+
+function isRecoveryUrl() {
+  const query = new URLSearchParams(window.location.search);
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  return query.has('code') || query.get('type') === 'recovery' || hash.get('type') === 'recovery' || hash.has('access_token') || hash.has('refresh_token');
+}
+
+function openRecoveryWhenReady() {
+  if (!isRecoveryUrl()) return;
+  if (document.body) showPasswordRecoveryModal();
+  else window.addEventListener('DOMContentLoaded', showPasswordRecoveryModal, { once: true });
 }
 
 client.auth.onAuthStateChange((event) => {
@@ -115,5 +127,12 @@ client.auth.onAuthStateChange((event) => {
     else window.addEventListener('DOMContentLoaded', showPasswordRecoveryModal, { once: true });
   }
 });
+
+// Fallback: also detect the recovery URL directly. This covers cases where the
+// PASSWORD_RECOVERY event happens before the application finishes mounting.
+if (typeof window !== 'undefined') {
+  openRecoveryWhenReady();
+  window.addEventListener('load', openRecoveryWhenReady, { once: true });
+}
 
 export const supabase = client;
