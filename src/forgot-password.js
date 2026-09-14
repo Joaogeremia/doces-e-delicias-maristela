@@ -43,9 +43,7 @@ function addForgotPasswordLink() {
         supabaseUrl: SUPABASE_URL,
       });
 
-      const result = await supabaseReset.auth.resetPasswordForEmail(email, {
-        redirectTo,
-      });
+      const result = await supabaseReset.auth.resetPasswordForEmail(email, { redirectTo });
 
       console.info('[Maristela Password Reset] Resposta do Supabase', {
         ok: !result.error,
@@ -55,9 +53,7 @@ function addForgotPasswordLink() {
         errorCode: result.error?.code ?? null,
       });
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
 
       link.textContent = 'E-mail enviado!';
       alert('Enviamos o link de recuperação para seu e-mail. Verifique também a caixa de spam.');
@@ -92,7 +88,7 @@ function addForgotPasswordLink() {
         `Origem: ${diagnostic.origin}`,
       ].join('\n');
 
-      alert(`Não foi possível enviar o e-mail.\n\n${details}\n\nAbra o console do navegador (F12 > Console) se precisarmos investigar mais.`);
+      alert(`Não foi possível enviar o e-mail.\n\n${details}`);
     }
   });
 
