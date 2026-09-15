@@ -1,23 +1,26 @@
-/* Mobile/iPhone: responsive layout and prevent automatic Safari zoom on form controls. */
-html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+/* Mobile: layout responsivo e formulário Admin sem zoom automático. */
+html,body,#root{width:100%;max-width:100%;min-width:0;overflow-x:hidden;-webkit-text-size-adjust:100%}
 body{overscroll-behavior-x:none}
 @media (max-width:600px){
 *,*::before,*::after{box-sizing:border-box}
-.overlay{width:100vw;max-width:100vw;overflow:hidden}
-.admin-modal{width:100%;max-width:100vw;min-width:0;height:100%;max-height:100dvh;overflow-y:auto;overflow-x:hidden;padding:18px 16px 32px}
-.admin-head{min-width:0;gap:12px}.admin-head>div{min-width:0;flex:1}.admin-head h2{font-size:30px;line-height:1.1;overflow-wrap:anywhere}
+html{width:100%;overflow-x:hidden}
+body{width:100%;min-width:0;overflow-x:hidden}
+.overlay{position:fixed;inset:0;width:100%;max-width:100%;overflow:hidden}
+.admin-modal{position:fixed;inset:0;width:100vw;max-width:100vw;min-width:0;height:100dvh;max-height:100dvh;margin:0;border-radius:0;overflow-y:auto;overflow-x:hidden;padding:18px 16px 32px}
+.admin-head{width:100%;min-width:0;gap:12px}.admin-head>div{min-width:0;flex:1}.admin-head h2{font-size:30px;line-height:1.1;overflow-wrap:anywhere}
 .admin-user-bar{width:100%;min-width:0;max-width:100%;box-sizing:border-box}.admin-user-bar span{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .admin-form{width:100%;max-width:100%;min-width:0;box-sizing:border-box;overflow:hidden;padding:16px}
 .form-grid{width:100%;max-width:100%;min-width:0;display:grid;grid-template-columns:minmax(0,1fr)!important;gap:0}
 .form-grid label{width:100%;max-width:100%;min-width:0;display:block;overflow-wrap:anywhere}
-.form-grid input,.form-grid textarea,.form-grid select,.admin-form input,.admin-form textarea,.admin-form select{width:100%;max-width:100%;min-width:0;box-sizing:border-box;font-size:16px!important;line-height:1.35;padding:12px}
-.admin-form input[type="checkbox"]{width:20px;min-width:20px;max-width:20px;height:20px;padding:0;margin:0}.admin-form textarea{min-height:90px;resize:vertical}
+.form-grid input,.form-grid textarea,.form-grid select,.admin-form input,.admin-form textarea,.admin-form select{width:100%;max-width:100%;min-width:0;box-sizing:border-box;font-family:inherit;font-size:16px!important;line-height:1.35;padding:12px;-webkit-appearance:none;appearance:none;zoom:1}
+.admin-form input[type="checkbox"]{width:20px;min-width:20px;max-width:20px;height:20px;padding:0;margin:0;-webkit-appearance:auto;appearance:auto}
+.admin-form textarea{min-height:90px;resize:vertical}
 .field-help{display:block;max-width:100%;font-size:11px!important;line-height:1.45;overflow-wrap:anywhere;word-break:break-word}
 .check{display:flex!important;align-items:center;gap:10px;width:100%!important;min-height:44px;margin-bottom:6px!important;font-size:15px!important}
 .admin-form-actions{width:100%;display:flex;flex-direction:column;gap:10px;margin-top:18px}.admin-form-actions>*{width:100%;min-width:0;min-height:48px}
 .admin-list{width:100%;max-width:100%;min-width:0}.admin-row{width:100%;max-width:100%;min-width:0;gap:8px}.admin-product{min-width:0;flex:1}.admin-product>div{min-width:0}.admin-product b,.admin-product small{overflow-wrap:anywhere;word-break:break-word}.admin-actions{flex:none}
 .auth-overlay{width:100vw;max-width:100vw;padding:12px}.auth-card{width:100%;max-width:430px;min-width:0;box-sizing:border-box;padding:22px 18px;overflow:hidden}.auth-form{width:100%;min-width:0}.auth-form label{font-size:11px}.auth-form input{width:100%;min-width:0;max-width:100%;box-sizing:border-box;font-size:16px!important;line-height:1.35;padding:12px}.auth-submit{width:100%;min-height:48px}
-input,textarea,select{font-size:16px!important}
+input,textarea,select{font-size:16px!important;max-width:100%;min-width:0}
 .product-grid,.featured-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.product-card{min-width:0}.product-info{min-width:0}.product-info h3{overflow-wrap:anywhere;word-break:break-word}.product-bottom{min-width:0}.mobile-menu-drawer{width:100%;max-width:390px;min-width:0}
 }
 @media (max-width:380px){.admin-modal{padding-left:12px;padding-right:12px}.admin-form{padding:14px}.auth-overlay{padding:8px}.auth-card{padding:20px 15px}.brand b{font-size:13px}.admin-head h2{font-size:27px}.form-grid input,.form-grid textarea,.form-grid select{font-size:16px!important}}
